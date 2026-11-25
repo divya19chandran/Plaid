@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bank ranking · Customer view</title>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#181a1d}
+*{box-sizing:border-box}
+body{margin:0;background:#f7f7f7}
+main{max-width:1060px;margin:0 auto;padding:22px 18px 36px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.heading{font-size:18px;font-weight:700;margin:0}.sub{font-size:12px;color:#767b80;margin:5px 0 0}
+.tabs{display:inline-flex;gap:4px;background:#e8e9ea;border-radius:10px;padding:4px}
+.tab{border:0;background:transparent;color:#4c535b;padding:11px 18px;font-weight:700;cursor:pointer;border-radius:7px;font-size:13px}
+.tab[aria-pressed=true]{background:#fff;color:#0c0c0c;box-shadow:0 1px 5px #0002}
+.tab:focus-visible{outline:2px solid #111;outline-offset:3px}
+.scene{position:relative;width:100%;aspect-ratio:1000/817;background:#fff;overflow:hidden;border-radius:8px;box-shadow:0 5px 26px #00000018}
+.official{display:block;position:absolute;width:100%;height:100%;object-fit:fill;top:0;left:0}
+/* Offline fallback recreated from the published Plaid desktop layout. The actual official screenshot overlays it when accessible. */
+.fallback{position:absolute;inset:0;background:linear-gradient(#570468,#360444 37%,#fbfbfb 37%,#fafafa 100%);}
+.back{position:absolute;left:4.5%;top:4.9%;color:white;font-size:1.4vw}
+.payment-title{position:absolute;left:6.6%;top:10.5%;font-size:2.6vw;font-weight:700;color:white}
+.checkout{position:absolute;left:6.8%;top:17%;width:85%;height:84%;background:white;border-radius:17px 17px 0 0;padding:3.8% 5.5%;box-shadow:0 3px 18px #00000012}
+.cap{font-size:1.25vw;font-weight:bold;color:#858585}
+.plan{margin-top:1.2%;height:7%;display:flex;border:1px solid #e2e2e2;border-radius:5px;align-items:center;justify-content:space-around;font-size:1.35vw}
+.pay-method{margin-top:4.8%;font-size:1.35vw;display:flex;gap:8px;align-items:center}
+.else-method{margin-top:37%;font-size:1.35vw}
+.pay-footer{margin-top:5%;display:flex;justify-content:space-between;align-items:center;font-size:1.45vw}
+.pay-button{background:#d0c0d7;color:white;font-weight:bold;border-radius:6px;width:42%;padding:1.3%;text-align:center;font-size:1.5vw}
+/* Cover just the existing institution module, preserving Plaid's published checkout screen. */
+.module{position:absolute;left:12.2%;top:44.2%;width:74.6%;height:32.8%;background:#fff;border:1px solid #e7e7e7;border-radius:8px;padding:1.2%;}
+.search{height:17%;border:1px solid #dce1e6;border-radius:6px;display:flex;align-items:center;gap:9px;padding-left:2.4%;color:#9199a0;font-size:1.35vw;}
+.search svg{flex:none;width:17px;height:17px}
+.modulefoot{display:flex;justify-content:space-between;align-items:center;font-size:1.1vw;padding-top:1.4%;color:#141414}
+.logo-plaid{font-size:1.04vw;font-weight:800;letter-spacing:-.3px}
+/* Exact 4x2 placement of the bank-tile section in Plaid's original 1000 x 817 screenshot. */
+.bank-grid{position:absolute;left:13.6%;top:51.9%;width:71.4%;height:20%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));column-gap:1%;row-gap:3.5%;z-index:4}
+.bank{background:#fff;border:1px solid #e7e8eb;border-radius:7px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:3px;text-align:center}
+.bank svg{max-width:94%;height:70%;display:block;overflow:visible}
+.bank .wells{background:#bf171b;border:1px solid #a61920;color:#f9d976;font-family:Georgia,serif;font-weight:700;font-size:clamp(7px,1.13vw,12px);height:57%;aspect-ratio:1.22;display:flex;align-items:center;justify-content:center;line-height:.95;letter-spacing:.3px}
+.bank .logo-name{font-weight:bold;line-height:1.05;font-size:clamp(10px,1.4vw,15px)}
+.bank .tiny{font-size:clamp(8px,1.17vw,12px)}
+.bank .chase{display:flex;align-items:center;gap:4px;color:#171717;letter-spacing:.03em}
+.bank .chase svg{height:22px;width:22px}
+.bank .bofa{display:flex;flex-direction:column;align-items:center;gap:2px;color:#24538a;font-size:clamp(7px,1.05vw,11px)}
+.bank .bofa svg{height:19px;width:42px}
+.bank .citi{font-weight:bold;color:#183f76;font-size:clamp(18px,2.3vw,27px);letter-spacing:-1.3px;position:relative}
+.bank .citi:before{content:"";position:absolute;border-top:3px solid #e43d3f;border-radius:50% 50% 0 0;left:28%;right:9%;top:-2px;height:10px}
+.bank .usbank{color:#1b4674;font-size:clamp(12px,1.65vw,19px);font-weight:800}
+.bank .usbank:before{content:"us";color:#fff;background:#d42336;padding:1px 3px;margin-right:2px;border-radius:2px}
+.bank .usbank>span{display:none}
+.bank .pnc{color:#206391;font-size:clamp(14px,1.9vw,23px);font-weight:750;display:flex;align-items:center;gap:7px}
+.bank .pnc .circle{color:white;background:#ed7e23;border-radius:50%;width:21px;height:21px;display:grid;place-items:center;font-size:14px}
+.bank .capital{color:#143768;font-size:clamp(12px,1.58vw,19px);font-weight:750;font-style:italic}
+.bank .td{background:#37aa4a;color:#fff;font-size:clamp(12px,1.8vw,20px);padding:6px 8px;font-weight:800}
+.note{color:#767b80;font-size:11px;margin:12px 2px 0;line-height:1.5}
+.note a{color:#4b5660}
+@media(max-width:680px){main{padding:13px 8px}.heading{font-size:16px}.tab{padding:10px 11px;font-size:12px}.top{justify-content:center;text-align:center}.scene{border-radius:4px}.bank-grid{row-gap:3%;column-gap:1%}.bank{border-radius:4px;padding:1px}.bank .chase svg{width:11px;height:11px}.bank .pnc .circle{height:12px;width:12px;font-size:9px}.bank .citi:before{border-width:1.5px}.bank .wells{letter-spacing:0}.note{font-size:10px}}
+</style>
+</head>
+<body><main>
+<div class="top">
+<div><h1 class="heading">Customer view · Bank selection</h1><p class="sub">Same new payer, different suggested bank order</p></div>
+<div class="tabs" role="group" aria-label="Change ranking strategy">
+<button class="tab" id="mvp" type="button" aria-pressed="true">MVP · Geographic</button>
+<button class="tab" id="v1" type="button" aria-pressed="false">V1 · Contextual</button>
+<button class="tab" id="v2" type="button" aria-pressed="false">V2 · ML</button>
+</div>
+</div>
+<div class="scene" aria-label="Plaid Embedded Institution Search checkout with changing bank grid">
+<div class="fallback" aria-hidden="true">
+<div class="back">‹ &nbsp;Back</div><div class="payment-title">Payment</div>
+<div class="checkout"><div class="cap">PAYMENT PLAN</div><div class="plan"><span>◉ &nbsp;Monthly</span><span>◯ &nbsp;Quarterly</span><span>◯ &nbsp;Annual</span></div>
+<div class="cap" style="margin-top:4.7%">SELECT A PAYMENT METHOD</div><div class="pay-method">◉ &nbsp;⚑ Pay by bank</div>
+<div class="else-method">◯ &nbsp;▭ Credit/Debit card</div><div class="cap" style="margin-top:4.5%">CONFIRM PAYMENT</div><div class="pay-footer"><span>Pet insurance &nbsp; <strong>$47.49/mo</strong></span><span class="pay-button">Pay →</span></div>
+</div>
+<div class="module"><div class="search"><svg viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.1" stroke="#777" stroke-width="1.5"/><path d="M12.5 12.5l4.4 4.4" stroke="#777" stroke-width="1.5"/></svg>Search your bank</div><div style="height:68%"></div><div class="modulefoot"><span class="logo-plaid">▦ PLAID</span><span style="text-decoration:underline">What is Plaid?</span></div></div>
+</div>
+<img class="official" alt="Plaid's published Embedded Institution Search desktop payment screen" src="https://plaid.com/assets/img/docs/embedded-search-desktop.png" onerror="this.style.display='none'"/>
+<div class="bank-grid" id="grid" aria-live="polite"></div>
+</div>
+<p class="note">Concept prototype using <a href="https://plaid.com/docs/link/embedded-institution-search/" target="_blank" rel="noopener noreferrer">Plaid's published desktop checkout screen</a>. Only the suggested bank order changes. The rankings are hypothetical; no live bank connection is made.</p>
+</main>
+<script>
+const bankOrder={
+ mvp:['Chase','Bank of America','Wells Fargo','Citi','US Bank','PNC','Capital One','TD Bank'],
+ v1:['Chase','Wells Fargo','Citi','Bank of America','US Bank','PNC','TD Bank','Capital One'],
+ v2:['Wells Fargo','Chase','Citi','Bank of America','PNC','US Bank','Capital One','TD Bank']
+};
+const icons={
+ Chase:`<div class="chase logo-name">CHASE<svg viewBox="0 0 40 40" aria-hidden="true"><path fill="#1170b7" d="M13 3H31L37 10H20Z M37 13V31L30 37V20Z M27 37H9L3 30H20Z M3 27V9L10 3V20Z"/></svg></div>`,
+ 'Bank of America':`<div class="bofa"><svg viewBox="0 0 66 30" aria-hidden="true"><path d="M8 2l22 6-5 4-22-6Z M19 1l25 8-5 4-25-8Z M30 1l26 9-5 4-26-9Z" fill="#e42d41"/><path d="M4 13l22 5-6 4L0 17Z M16 13l25 7-6 4-25-7Z M29 14l29 9-6 4-29-9Z" fill="#115fa6"/></svg><strong>BANK OF AMERICA</strong></div>`,
+ 'Wells Fargo':`<div class="wells">WELLS<br>FARGO</div>`,
+ Citi:`<div class="citi">citi</div>`,
+ 'US Bank':`<div class="usbank"><span>US</span>bank</div>`,
+ PNC:`<div class="pnc"><span class="circle">▶</span>PNC</div>`,
+ 'Capital One':`<div class="capital">Capital One</div>`,
+ 'TD Bank':`<div class="td">TD</div>`
+};
+function show(phase){
+  Object.keys(bankOrder).forEach(k=>document.getElementById(k).setAttribute('aria-pressed',k===phase?'true':'false'));
+  document.getElementById('grid').innerHTML=bankOrder[phase].map((name,i)=>`<div class="bank" role="img" aria-label="Rank ${i+1}: ${name}">${icons[name]}</div>`).join('');
+}
+for(const phase of Object.keys(bankOrder))document.getElementById(phase).addEventListener('click',()=>show(phase));
+show('mvp');
+</script>
+</body>
+</html>
